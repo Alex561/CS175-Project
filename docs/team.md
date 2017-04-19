@@ -6,11 +6,11 @@ title:  Team
 # {{ page.title }}
 
 
-## USER 1
-***UCI Net ID***: ucinetid
+## Alex Chapp
+***achapp***: ucinetid
 
-## USER 2
-***UCI Net ID***: ucinetid
+## Katherine Fitzpatrick
+***kathermf***: ucinetid
 
-## USER 3
-***UCI Net ID***: ucinetid
+## Edwin Ho
+***eaho1***: ucinetid
