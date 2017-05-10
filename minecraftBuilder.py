@@ -25,11 +25,36 @@ import os
 import sys
 import time
 
-def picturefy(ndarray):
-    print(ndarray.shape)
-    return '''<DrawBlock x="-10" y="228" z="0" type="wool"/>
-    <DrawBlock x="-10" y="229" z="0" type="emerald_block"/>
-    <DrawEntity x="-11" y="227" z="0" type="Creeper"'''
+import colors as woolColors
+from skimage import io
+
+def closestColor(pixel, woolDict):
+    resultColor = "WHITE"
+    minDif = float("inf")
+    for wool, colorValue in woolDict.items():
+        dif = np.sqrt((pixel[0]-colorValue[0])**2 + (pixel[1]-colorValue[1])**2 + (pixel[2]-colorValue[2])**2)
+        if (dif < minDif):
+            resultColor = wool
+            minDif = dif
+    return resultColor
+
+def picturefy(pixelArray, woolDict):
+    returnString = ""
+    pixelArray = np.rot90(pixelArray, k=2)
+    xCount = 0
+    yCount = 0
+    for x in range(pixelArray.shape[1]):
+        xCount += 1
+        for y in range(pixelArray.shape[0]):
+            yCount += 1
+            closestWool = closestColor(pixelArray[y][x], woolDict)
+            returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="wool" colour="{2}"/>\n'.format(x, y+7, closestWool)
+
+    print("({0}, {1}) pixels", xCount, yCount/xCount)
+    return returnString
+
+imageFile = "Nyan.png"
+image = io.imread(imageFile)
 
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
 
@@ -44,8 +69,9 @@ missionXML = '''<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 
               <ServerSection>
                 <ServerHandlers>
-                  <FlatWorldGenerator generatorString="3;7,220*1,5*3,2;3;,biome_1"/>
-                  <DrawingDecorator>''' + picturefy(np.zeros(5,5)) + '''
+                  <FlatWorldGenerator generatorString="3;7,0,5*3,2;3;,biome_1"/>
+                  <DrawingDecorator>
+                    ''' + picturefy(image, woolColors.colors) + '''
                   </DrawingDecorator>
                   <ServerQuitFromTimeUp timeLimitMs="1000"/>
                   <ServerQuitWhenAnyAgentFinishes/>
@@ -55,7 +81,7 @@ missionXML = '''<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
               <AgentSection mode="Survival">
                 <Name>MalmoTutorialBot</Name>
                 <AgentStart>
-                    <Placement x="0.5" y="227.0" z="0.5" yaw="90"/>
+                    <Placement x="0.5" y="7.0" z="0.5" yaw="0"/>
                 </AgentStart>
                 <AgentHandlers>
                   <ObservationFromFullStats/>

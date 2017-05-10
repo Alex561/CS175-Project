@@ -5,11 +5,8 @@
 # # camera = data.camera()
 # # print(camera.size)
 
-import os
-import skimage
 # filename = os.path.join('GORRILA.jpg')
 from skimage import io
-gorilla = io.imread('C:\\Users\\Edwin\\Pictures\\SELFIES\\Us Beach.jpg')
-
+gorilla = io.imread("GORILLA.jpg")
 print(gorilla.shape)
-print(gorilla[390, 920])
+print(gorilla[714, 1279])
