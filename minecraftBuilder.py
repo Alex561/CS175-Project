@@ -27,6 +27,21 @@ import time
 
 import colors as woolColors
 from skimage import io
+from sklearn import decomposition
+
+def getRGBfromI(RGBint):
+    blue = RGBint & 255
+    green = (RGBint >> 8) & 255
+    red = (RGBint >> 16) & 255
+    return red, green, blue
+
+def getIfromRGB(rgb):
+    red = rgb[0]
+    green = rgb[1]
+    blue = rgb[2]
+    RGBint = (red << 16) + (green << 8) + blue
+    print RGBint
+    return RGBint
 
 def closestColor(pixel, woolDict):
     resultColor = "WHITE"
@@ -39,21 +54,49 @@ def closestColor(pixel, woolDict):
     return resultColor
 
 def picturefy(pixelArray, woolDict):
+    # pca = decomposition.TruncatedSVD(n_components=100, algorithm="arpack")
+    # pca = sklearn.decomposition.PCA(n_components = 9, whiten = True)
+    # pca = sklearn.decomposition.KernelPCA(kernel = "rbf")
+    # pca = sklearn.decomposition.SparsePCA(n_components = 8)
+    # pca = sklearn.decomposition.IncrementalPCA(n_components = 8, whiten = True)
+
     returnString = ""
+    isAlpha = False
+    if (pixelArray.shape[2] == 4):
+        isAlpha = True
+
+    # newPixelArray = np.array([])
+    # for x in range(pixelArray.shape[1]):
+    #     newRow = np.array([])
+    #     for y in range(pixelArray.shape[0]):
+    #         np.concatenate(newRow, getIfromRGB(pixelArray[y][x]))
+    #
+    #     np.concatenate(newPixelArray, newRow)
+    #
+    #
+    # print(newPixelArray.shape)
+    # print(newPixelArray[0,0])
+
     pixelArray = np.rot90(pixelArray, k=2)
+
+    # pca.fit(pixelArray)
+    #
+    # pixelArray = pca.transform(pixelArray)
+
     xCount = 0
     yCount = 0
     for x in range(pixelArray.shape[1]):
         xCount += 1
         for y in range(pixelArray.shape[0]):
             yCount += 1
-            closestWool = closestColor(pixelArray[y][x], woolDict)
-            returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="wool" colour="{2}"/>\n'.format(x, y+7, closestWool)
+            if (isAlpha and pixelArray[y][x][3] > 0):
+                closestWool = closestColor(pixelArray[y][x], woolDict)
+                returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="wool" colour="{2}"/>\n'.format(x, y+7, closestWool)
 
     print("({0}, {1}) pixels", xCount, yCount/xCount)
     return returnString
 
-imageFile = "Nyan.png"
+imageFile = "Overwatch.png"
 image = io.imread(imageFile)
 
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
