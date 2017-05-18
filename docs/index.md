@@ -3,7 +3,7 @@ layout: default
 title:  Home
 ---
 
-![](/images/image.png)
+![](image.png)
 
 
 What's Markdown (`.md`)?
