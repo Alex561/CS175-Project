@@ -3,7 +3,7 @@ layout: default
 title:  Home
 ---
 
-_Add your text here_
+![](/images/image.png)
 
 
 What's Markdown (`.md`)?
