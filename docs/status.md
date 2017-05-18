@@ -4,7 +4,8 @@ title:	Status
 ---
 
 ## Project Summary
-text here
+
+This project is an AI that takes a provided picture and builds it vertically in Minecraft using a variety of Minecraft blocks. 
 
 ## Approach
 text here

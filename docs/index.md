@@ -5,30 +5,12 @@ title:  Home
 
 ![](image.png)
 
+## Code
+[https://github.com/Alex561/CS175-Project](https://github.com/Alex561/CS175-Project)
 
-What's Markdown (`.md`)?
+## Screenshots
 
-Markdown is markup that lets you write hypertext (HTML) documents
-in easy-to-read and easy-to-write plain text.
-No angle brackets `<></>` required for
-paragraphs, lists, blockquotes, tables, etc.
-
-
-This is a paragraph (in Markdown). Some more
-text here.
-
-This is another paragraph.
-
-This is a list:
-
-- Orange
-- Apple
-- Blueberry
-
-
-
-Just getting started with Markdown?
-See the [HTML <-> Markdown Quick Reference (Cheat Sheet)][quickref].
-
-
-[quickref]: https://github.com/mundimark/quickrefs/blob/master/HTML.md
+## Resources
+Scikit-Image:
+This project uses Scikit-Image for image processing. Scikit-Image is a collection of algorithms used for image processing in Python.
+[http://scikit-image.org/](http://scikit-image.org/ "Link to Scikit-Image's Site")
