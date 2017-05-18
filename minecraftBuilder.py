@@ -29,36 +29,47 @@ import colors as woolColors
 from skimage import io
 from sklearn import decomposition
 
-def pca(X):
-  # Principal Component Analysis
-  # input: X, matrix with training data as flattened arrays in rows
-  # return: projection matrix (with important dimensions first),
-  # variance and mean
+def pca(X, yDim):
+    # Principal Component Analysis
+    # input: X, matrix with training data as flattened arrays in rows
+    # return: projection matrix (with important dimensions first),
+    # variance and mean
 
-  #shape the rgb bands
-  X = X.reshape(-1, 3)
-  #get dimensions
-  num_data,dim = X.shape
+    #shape the rgb bands
+    X = flattenColorImage(X)
 
-  #center data
-  mean_X = X.mean(axis=0)
-  for i in range(num_data):
-      X[i] -= mean_X
+    svd = decomposition.TruncatedSVD(n_components=yDim, algorithm="arpack")
 
-  if dim>100:
-      print 'PCA - compact trick used'
-      M = dot(X,X.T) #covariance matrix
-      e,EV = linalg.eigh(M) #eigenvalues and eigenvectors
-      tmp = dot(X.T,EV).T #this is the compact trick
-      V = tmp[::-1] #reverse since last eigenvectors are the ones we want
-      S = sqrt(e)[::-1] #reverse since eigenvalues are in increasing order
-  else:
-      print 'PCA - SVD used'
-      U,S,V = linalg.svd(X)
-      V = V[:num_data] #only makes sense to return the first num_data
+    svd.fit(X)
 
-   #return the projection matrix, the variance and the mean
-   return V,S,mean_X
+    newX = svd.transform(X).astype(int)
+
+    print(newX.shape)
+    print(newX[0,0])
+
+    # return unflattenColorImage(newX) - broken atm, was working on this
+    return newX
+
+def flattenColorImage(colorImage):
+    flattended = np.zeros(shape=(colorImage.shape[0], colorImage.shape[1]))
+    for y in range(colorImage.shape[0]):
+        newRow = np.zeros(colorImage.shape[1])
+        for x in range(colorImage.shape[1]):
+            newRow[x] = getIfromRGB(colorImage[y][x])
+        flattended[y] = newRow
+
+    return flattended
+
+def unflattenColorImage(flattenedImage):
+    unflattended = np.zeros(shape=(flattenedImage.shape[0], flattenedImage.shape[1], 3))
+    for y in range(flattenedImage.shape[0]):
+        newRow = np.zeros(flattenedImage.shape[1])
+        for x in range(flattenedImage.shape[1]):
+            rgbFromI = getRGBfromI(flattenColorImage[y][x])
+            newRow[y][x] = rgbFromI
+        unflattended[y] = newRow
+
+    return unflattended
 
 def getRGBfromI(RGBint):
     blue = RGBint & 255
@@ -71,7 +82,6 @@ def getIfromRGB(rgb):
     green = rgb[1]
     blue = rgb[2]
     RGBint = (red << 16) + (green << 8) + blue
-    print RGBint
     return RGBint
 
 def closestColor(pixel, woolDict):
@@ -85,56 +95,14 @@ def closestColor(pixel, woolDict):
     return resultColor
 
 def picturefy(pixelArray, woolDict):
-    # pca = decomposition.TruncatedSVD(n_components=100, algorithm="arpack")
-    # pca = sklearn.decomposition.PCA(n_components = 9, whiten = True)
-    # pca = sklearn.decomposition.KernelPCA(kernel = "rbf")
-    # pca = sklearn.decomposition.SparsePCA(n_components = 8)
-    # pca = sklearn.decomposition.IncrementalPCA(n_components = 8, whiten = True)
-
     returnString = ""
     isAlpha = False
     if (pixelArray.shape[2] == 4):
         isAlpha = True
 
-    # newPixelArray = np.array([])
-    # for x in range(pixelArray.shape[1]):
-    #     newRow = np.array([])
-    #     for y in range(pixelArray.shape[0]):
-    #         np.concatenate(newRow, getIfromRGB(pixelArray[y][x]))
-    #
-    #     np.concatenate(newPixelArray, newRow)
-
-
-    # print(newPixelArray.shape)
-    # print(newPixelArray[0,0])
-
     pixelArray = np.rot90(pixelArray, k=2)
 
-    # pca.fit(pixelArray)
-    #
-    # pixelArray = pca.transform(pixelArray)
-
-    # n_components = 2
-    # ipca = decomposition.IncrementalPCA(n_components=n_components, batch_size=10)
-    # X_ipca = ipca.fit_transform(pixelArray)
-    # pca = decomposition.(n_components=n_components)
-    # X_pca = pca.fit_transform(pixelArray)
-    # colors = ['navy', 'turquoise', 'darkorange']
-    # for X_transformed, title in [(X_ipca, "Incremental PCA"), (X_pca, "PCA")]:
-    #     plt.figure(figsize=(8, 8))
-    #     for color, i, target_name in zip(colors, [0, 1, 2], pixelArray.target_names):
-    #         plt.scatter(X_transformed[y == i, 0], X_transformed[y == i, 1],
-    #                     color=color, lw=2, label=target_name)
-    #         if "Incremental" in title:
-    #             err = np.abs(np.abs(X_pca) - np.abs(X_ipca)).mean()
-    #             plt.title(title + " of iris dataset\nMean absolute unsigned error "
-    #                               "%.6f" % err)
-    #     else:
-    #         plt.title(title + " of iris dataset")
-    #     plt.legend(loc="best", shadow=False, scatterpoints=1)
-    #     plt.axis([-4, 4, -1.5, 1.5])
-    #     plt.show()
-
+    # pixelArray = pca(pixelArray, 100) - broken atm
 
     xCount = 0
     yCount = 0
@@ -142,13 +110,15 @@ def picturefy(pixelArray, woolDict):
         xCount += 1
         for y in range(pixelArray.shape[0]):
             yCount += 1
-            if (isAlpha and pixelArray[y][x][3] > 0):
-                closestWool = closestColor(pixelArray[y][x], woolDict)
-                # returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="lapis_block"/>\n'.format(x, y+7)
-                if closestWool in woolColors.wool:
-                    returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="wool" colour="{2}"/>\n'.format(x, y+7, closestWool)
-                else:
-                    returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="{2}"/>\n'.format(x, y+7, closestWool)
+
+            rgbColor = pixelArray[y][x]
+            # if (isAlpha and pixelArray[y][x][3] > 0):
+            closestWool = closestColor(rgbColor, woolDict)
+            # returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="lapis_block"/>\n'.format(x, y+7)
+            if closestWool in woolColors.wool:
+                returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="wool" colour="{2}"/>\n'.format(x, y+7, closestWool)
+            else:
+                returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="{2}"/>\n'.format(x, y+7, closestWool)
 
     print("({0}, {1}) pixels", xCount, yCount/xCount)
     return returnString
