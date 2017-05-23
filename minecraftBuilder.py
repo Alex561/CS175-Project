@@ -27,62 +27,72 @@ import time
 
 import colors as woolColors
 from skimage import io
-from sklearn import decomposition
+from skimage.transform import rescale, resize
+import Image
+# from sklearn import decomposition
 
-def pca(X, yDim):
-    # Principal Component Analysis
-    # input: X, matrix with training data as flattened arrays in rows
-    # return: projection matrix (with important dimensions first),
-    # variance and mean
+# def pca(X, yDim):
+#     # Principal Component Analysis
+#     # input: X, matrix with training data as flattened arrays in rows
+#     # return: projection matrix (with important dimensions first),
+#     # variance and mean
+#
+#     #shape the rgb bands
+#     X = flattenColorImage(X)
+#
+#     svd = decomposition.TruncatedSVD(n_components=yDim, algorithm="arpack")
+#
+#     svd.fit(X)
+#
+#     newX = svd.transform(X).astype(int)
+#
+#     print(newX.shape)
+#     print(newX[0,0])
+#
+#     # return unflattenColorImage(newX) - broken atm, was working on this
+#     return newX
 
-    #shape the rgb bands
-    X = flattenColorImage(X)
+# def flattenColorImage(colorImage):
+#     flattended = np.zeros(shape=(colorImage.shape[0], colorImage.shape[1]))
+#     for y in range(colorImage.shape[0]):
+#         newRow = np.zeros(colorImage.shape[1])
+#         for x in range(colorImage.shape[1]):
+#             newRow[x] = getIfromRGB(colorImage[y][x])
+#         flattended[y] = newRow
+# 
+#     return flattended
+# 
+# def unflattenColorImage(flattenedImage):
+#     unflattended = np.zeros(shape=(flattenedImage.shape[0], flattenedImage.shape[1], 3))
+#     for y in range(flattenedImage.shape[0]):
+#         newRow = np.zeros(flattenedImage.shape[1])
+#         for x in range(flattenedImage.shape[1]):
+#             rgbFromI = getRGBfromI(flattenColorImage[y][x])
+#             newRow[y][x] = rgbFromI
+#         unflattended[y] = newRow
+# 
+#     return unflattended
+# 
+# def getRGBfromI(RGBint):
+#     blue = RGBint & 255
+#     green = (RGBint >> 8) & 255
+#     red = (RGBint >> 16) & 255
+#     return red, green, blue
+# 
+# def getIfromRGB(rgb):
+#     red = rgb[0]
+#     green = rgb[1]
+#     blue = rgb[2]
+#     RGBint = (red << 16) + (green << 8) + blue
+#     return RGBint
 
-    svd = decomposition.TruncatedSVD(n_components=yDim, algorithm="arpack")
+difList = []
 
-    svd.fit(X)
-
-    newX = svd.transform(X).astype(int)
-
-    print(newX.shape)
-    print(newX[0,0])
-
-    # return unflattenColorImage(newX) - broken atm, was working on this
-    return newX
-
-def flattenColorImage(colorImage):
-    flattended = np.zeros(shape=(colorImage.shape[0], colorImage.shape[1]))
-    for y in range(colorImage.shape[0]):
-        newRow = np.zeros(colorImage.shape[1])
-        for x in range(colorImage.shape[1]):
-            newRow[x] = getIfromRGB(colorImage[y][x])
-        flattended[y] = newRow
-
-    return flattended
-
-def unflattenColorImage(flattenedImage):
-    unflattended = np.zeros(shape=(flattenedImage.shape[0], flattenedImage.shape[1], 3))
-    for y in range(flattenedImage.shape[0]):
-        newRow = np.zeros(flattenedImage.shape[1])
-        for x in range(flattenedImage.shape[1]):
-            rgbFromI = getRGBfromI(flattenColorImage[y][x])
-            newRow[y][x] = rgbFromI
-        unflattended[y] = newRow
-
-    return unflattended
-
-def getRGBfromI(RGBint):
-    blue = RGBint & 255
-    green = (RGBint >> 8) & 255
-    red = (RGBint >> 16) & 255
-    return red, green, blue
-
-def getIfromRGB(rgb):
-    red = rgb[0]
-    green = rgb[1]
-    blue = rgb[2]
-    RGBint = (red << 16) + (green << 8) + blue
-    return RGBint
+def QuantitiveEval(difList):
+    sum=0
+    for i in range(len(difList)):
+        sum+=difList[i]
+    return sum/len(difList)
 
 def closestColor(pixel, woolDict):
     resultColor = "WHITE"
@@ -92,6 +102,8 @@ def closestColor(pixel, woolDict):
         if (dif < minDif):
             resultColor = wool
             minDif = dif
+
+    difList.append(minDif)
     return resultColor
 
 def picturefy(pixelArray, woolDict):
@@ -111,20 +123,31 @@ def picturefy(pixelArray, woolDict):
         for y in range(pixelArray.shape[0]):
             yCount += 1
 
-            rgbColor = pixelArray[y][x]
-            # if (isAlpha and pixelArray[y][x][3] > 0):
-            closestWool = closestColor(rgbColor, woolDict)
-            # returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="lapis_block"/>\n'.format(x, y+7)
-            if closestWool in woolColors.wool:
-                returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="wool" colour="{2}"/>\n'.format(x, y+7, closestWool)
+            pixelColor = pixelArray[y][x] * 255
+            if (isAlpha):
+                pixelColor = round(pixelColor[0]), round(pixelColor[1]), round(pixelColor[2]), round(pixelColor[3])
             else:
-                returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="{2}"/>\n'.format(x, y+7, closestWool)
+                pixelColor = round(pixelColor[0]), round(pixelColor[1]), round(pixelColor[2])
+
+            # print(pixelColor)
+            if (isAlpha and pixelArray[y][x][3] > 0) or (not isAlpha):
+                closestWool = closestColor(pixelColor, woolDict)
+                if closestWool in woolColors.wool:
+                    returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="wool" colour="{2}"/>\n'.format(x, y+7, closestWool)
+                else:
+                    returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="{2}"/>\n'.format(x, y+7, closestWool)
 
     print("({0}, {1}) pixels", xCount, yCount/xCount)
+    print(QuantitiveEval(difList))
     return returnString
 
-imageFile = "Nyan.png"
+imageFile = "Tina.jpg"
 image = io.imread(imageFile)
+image = resize(image, (200, 200))
+
+import matplotlib.pyplot as plt
+plt.imshow(image)
+plt.show()
 
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
 
@@ -139,7 +162,7 @@ missionXML = '''<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 
               <ServerSection>
                 <ServerHandlers>
-                  <FlatWorldGenerator generatorString="3;7,0,5*3,2;3;,biome_1"/>
+                  <FlatWorldGenerator generatorString="3;7,0,5*3,2;3;,biome_1" forceReset="true"/>
                   <DrawingDecorator>
                     ''' + picturefy(image, woolColors.colors) + '''
                   </DrawingDecorator>
@@ -151,7 +174,7 @@ missionXML = '''<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
               <AgentSection mode="Survival">
                 <Name>MalmoTutorialBot</Name>
                 <AgentStart>
-                    <Placement x="0.5" y="7.0" z="0.5" yaw="0"/>
+                    <Placement x="0.5" y="8.0" z="0.5" yaw="0"/>
                 </AgentStart>
                 <AgentHandlers>
                   <ObservationFromFullStats/>
