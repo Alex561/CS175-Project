@@ -13,12 +13,15 @@ If you would like to take a look at our project, you can find it here:
 Here are some of the results from our testing. We use a variety of images to test the limits of our project.
 
 Recreation of the Overwatch symbol:
+
 ![](image2.png)
 
 GLORIOUS SPACE:
+
 ![](image3.png)
 
 Using a photo:
+
 ![](image4.png)
 
 
