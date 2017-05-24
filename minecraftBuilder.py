@@ -86,20 +86,109 @@ import Image
 #     RGBint = (red << 16) + (green << 8) + blue
 #     return RGBint
 
+def main(userInputP, userInputH, userInputW):
+    print("Here")
+    # picture stuff
+    imageFile = userInputP.get()
+    image = io.imread(imageFile)
+    image = resize(image, (int(userInputH.get()), int(userInputW.get())))
+
+    # import matplotlib.pyplot as plt
+    # plt.imshow(image)
+    # plt.show()
+
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
+
+    # More interesting generator string: "3;7,44*49,73,35:1,159:4,95:13,35:13,159:11,95:10,159:14,159:6,35:6,95:6;12;"
+
+    missionXML = '''<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+                <Mission xmlns="http://ProjectMalmo.microsoft.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+                  <About>
+                    <Summary>Hello world!</Summary>
+                  </About>
+
+                  <ServerSection>
+                    <ServerHandlers>
+                      <FlatWorldGenerator generatorString="3;7,0,5*3,2;3;,biome_1" forceReset="true"/>
+                      <DrawingDecorator>
+                        ''' + picturefy(image, woolColors.colors) + '''
+                      </DrawingDecorator>
+                      <ServerQuitFromTimeUp timeLimitMs="1000"/>
+                      <ServerQuitWhenAnyAgentFinishes/>
+                    </ServerHandlers>
+                  </ServerSection>
+
+                  <AgentSection mode="Survival">
+                    <Name>MalmoTutorialBot</Name>
+                    <AgentStart>
+                        <Placement x="0.5" y="8.0" z="0.5" yaw="0"/>
+                    </AgentStart>
+                    <AgentHandlers>
+                      <ObservationFromFullStats/>
+                      <ContinuousMovementCommands turnSpeedDegs="180"/>
+                    </AgentHandlers>
+                  </AgentSection>
+                </Mission>'''
+
+    # Create default Malmo objects:
+
+    agent_host = MalmoPython.AgentHost()
+    try:
+        agent_host.parse(sys.argv)
+    except RuntimeError as e:
+        print 'ERROR:', e
+        print
+        agent_host.getUsage()
+        exit(1)
+    if agent_host.receivedArgument("help"):
+        print
+        agent_host.getUsage()
+        exit(0)
+
+    my_mission = MalmoPython.MissionSpec(missionXML, True)
+    my_mission_record = MalmoPython.MissionRecordSpec()
+
+    # Attempt to start a mission:
+    max_retries = 3
+    for retry in range(max_retries):
+        try:
+            agent_host.startMission(my_mission, my_mission_record)
+            break
+        except RuntimeError as e:
+            if retry == max_retries - 1:
+                print "Error starting mission:", e
+                exit(1)
+            else:
+                time.sleep(2)
+
+    # Loop until mission starts:
+    print "Waiting for the mission to start ",
+    world_state = agent_host.getWorldState()
+    while not world_state.has_mission_begun:
+        sys.stdout.write(".")
+        time.sleep(0.1)
+        world_state = agent_host.getWorldState()
+        for error in world_state.errors:
+            print "Error:", error.text
+
+    print
+    print "Mission running ",
+
+    # Loop until mission ends:
+    while world_state.is_mission_running:
+        sys.stdout.write(".")
+        time.sleep(0.1)
+        world_state = agent_host.getWorldState()
+        for error in world_state.errors:
+            print "Error:", error.text
+
+    print
+    print "Mission ended"
+    # Mission has ended.
+
 difList = []
 
-#get resolution button
-def getResolution():
-    userInputP.get()
-    resolution =0
-    resolutionLabel=Label(root,text="Resolution: "+str(resolution))
-    resolutionLabel.pack()
-    resolutionLabel.place(x=150,y=60)
-#drawPciture button
-def drawPicture():
-   userInputH.get()
-   userInputW.get()
-   userInputP.get()
 def QuantitiveEval(difList):
     sum=0
     for i in range(len(difList)):
@@ -152,6 +241,23 @@ def picturefy(pixelArray, woolDict):
     print("({0}, {1}) pixels", xCount, yCount/xCount)
     print(QuantitiveEval(difList))
     return returnString
+
+#get resolution button
+def getResolution():
+    userInputP.get()
+    resolution =0
+    resolutionLabel=Label(root,text="Resolution: "+str(resolution))
+    resolutionLabel.pack()
+    resolutionLabel.place(x=150,y=60)
+
+#drawPciture button
+def drawPicture():
+    userInputH.get()
+    userInputW.get()
+    userInputP.get()
+
+    main(userInputP, userInputH, userInputW)
+
 #initilize gui
 root = Tk()
 frame = Frame(root, width=300, height=300)
@@ -183,108 +289,5 @@ drawPicture = Button(root, text ="Draw picture", command = drawPicture)#draw but
 drawPicture.pack()
 drawPicture.place(x=75,y=200)
 
-#picture stuff
-imageFile = "Tina.jpg"
-image = io.imread(imageFile)
-image = resize(image, (200, 200))
+root.mainloop()#drawn
 
-import matplotlib.pyplot as plt
-plt.imshow(image)
-plt.show()
-
-sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
-
-# More interesting generator string: "3;7,44*49,73,35:1,159:4,95:13,35:13,159:11,95:10,159:14,159:6,35:6,95:6;12;"
-
-missionXML = '''<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-            <Mission xmlns="http://ProjectMalmo.microsoft.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
-              <About>
-                <Summary>Hello world!</Summary>
-              </About>
-
-              <ServerSection>
-                <ServerHandlers>
-                  <FlatWorldGenerator generatorString="3;7,0,5*3,2;3;,biome_1" forceReset="true"/>
-                  <DrawingDecorator>
-                    ''' + picturefy(image, woolColors.colors) + '''
-                  </DrawingDecorator>
-                  <ServerQuitFromTimeUp timeLimitMs="1000"/>
-                  <ServerQuitWhenAnyAgentFinishes/>
-                </ServerHandlers>
-              </ServerSection>
-
-              <AgentSection mode="Survival">
-                <Name>MalmoTutorialBot</Name>
-                <AgentStart>
-                    <Placement x="0.5" y="8.0" z="0.5" yaw="0"/>
-                </AgentStart>
-                <AgentHandlers>
-                  <ObservationFromFullStats/>
-                  <ContinuousMovementCommands turnSpeedDegs="180"/>
-                </AgentHandlers>
-              </AgentSection>
-            </Mission>'''
-
-# Create default Malmo objects:
-
-agent_host = MalmoPython.AgentHost()
-try:
-    agent_host.parse(sys.argv)
-except RuntimeError as e:
-    print
-    'ERROR:', e
-    print
-    agent_host.getUsage()
-    exit(1)
-if agent_host.receivedArgument("help"):
-    print
-    agent_host.getUsage()
-    exit(0)
-
-my_mission = MalmoPython.MissionSpec(missionXML, True)
-my_mission_record = MalmoPython.MissionRecordSpec()
-
-# Attempt to start a mission:
-max_retries = 3
-for retry in range(max_retries):
-    try:
-        agent_host.startMission(my_mission, my_mission_record)
-        break
-    except RuntimeError as e:
-        if retry == max_retries - 1:
-            print
-            "Error starting mission:", e
-            exit(1)
-        else:
-            time.sleep(2)
-
-# Loop until mission starts:
-print
-"Waiting for the mission to start ",
-world_state = agent_host.getWorldState()
-while not world_state.has_mission_begun:
-    sys.stdout.write(".")
-    time.sleep(0.1)
-    world_state = agent_host.getWorldState()
-    for error in world_state.errors:
-        print
-        "Error:", error.text
-
-print
-print
-"Mission running ",
-
-# Loop until mission ends:
-while world_state.is_mission_running:
-    sys.stdout.write(".")
-    time.sleep(0.1)
-    world_state = agent_host.getWorldState()
-    for error in world_state.errors:
-        print
-        "Error:", error.text
-
-print
-print
-"Mission ended"
-# Mission has ended.
