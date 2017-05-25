@@ -26,15 +26,15 @@ An example of the AI using a photo:
 
 
 ## Resources
-#####Scikit-Image:
+##### Scikit-Image:
 This project uses Scikit-Image in order to process its images. Scikit-Image is a collection of algorithms used for image processing in Python. Check it out here:
 [http://scikit-image.org/](http://scikit-image.org/ "Link to Scikit-Image's Site")
 
-###Computer Vision
+### Computer Vision
 Here are some of the computer vision resources that we're looking at that may be used in this project.
 
-#####OpenCV Image Processing: 
+##### OpenCV Image Processing: 
 [http://docs.opencv.org/master/d2/dbd/tutorial_distance_transform.html](http://docs.opencv.org/master/d2/dbd/tutorial_distance_transform.html)
 
-#####SimpleCV Cookbook: 
+##### SimpleCV Cookbook: 
 [http://simplecv.sourceforge.net/doc/cookbook.html](http://simplecv.sourceforge.net/doc/cookbook.html)
