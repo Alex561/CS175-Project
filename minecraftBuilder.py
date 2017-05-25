@@ -28,7 +28,6 @@ import time
 import colors as woolColors
 from skimage import io
 from skimage.transform import rescale, resize
-import Image
 # from sklearn import decomposition
 
 # def pca(X, yDim):
@@ -86,18 +85,21 @@ import Image
 #     RGBint = (red << 16) + (green << 8) + blue
 #     return RGBint
 
-def main(userInputP, userInputH, userInputW):
-    print("Here")
+difList = []
+
+def main(imageString, imageHeight, imageWidth):
+    difList = []
+
     # picture stuff
-    imageFile = userInputP.get()
-    image = io.imread(imageFile)
-    image = resize(image, (int(userInputH.get()), int(userInputW.get())))
+    # imageFile = imageString
+    image = io.imread(imageString)
+    image = resize(image, (imageHeight, imageWidth))
 
     # import matplotlib.pyplot as plt
     # plt.imshow(image)
     # plt.show()
 
-    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
+    # sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
 
     # More interesting generator string: "3;7,44*49,73,35:1,159:4,95:13,35:13,159:11,95:10,159:14,159:6,35:6,95:6;12;"
 
@@ -122,7 +124,7 @@ def main(userInputP, userInputH, userInputW):
                   <AgentSection mode="Survival">
                     <Name>MalmoTutorialBot</Name>
                     <AgentStart>
-                        <Placement x="0.5" y="8.0" z="0.5" yaw="0"/>
+                        ''' + '<Placement x="{0}" y="{1}" z="{2}" yaw="0"/>'.format(imageWidth/2, imageHeight/2, -imageHeight * .75) + '''
                     </AgentStart>
                     <AgentHandlers>
                       <ObservationFromFullStats/>
@@ -148,6 +150,7 @@ def main(userInputP, userInputH, userInputW):
 
     my_mission = MalmoPython.MissionSpec(missionXML, True)
     my_mission_record = MalmoPython.MissionRecordSpec()
+    my_mission.setModeToSpectator()
 
     # Attempt to start a mission:
     max_retries = 3
@@ -187,8 +190,6 @@ def main(userInputP, userInputH, userInputW):
     print "Mission ended"
     # Mission has ended.
 
-difList = []
-
 def QuantitiveEval(difList):
     sum=0
     for i in range(len(difList)):
@@ -214,8 +215,6 @@ def picturefy(pixelArray, woolDict):
         isAlpha = True
 
     pixelArray = np.rot90(pixelArray, k=2)
-
-    # pixelArray = pca(pixelArray, 100) - broken atm
 
     xCount = 0
     yCount = 0
@@ -244,36 +243,24 @@ def picturefy(pixelArray, woolDict):
 
 #get resolution button
 def getResolution():
-    userInputP.get()
-    resolution =0
-    resolutionLabel=Label(root,text="Resolution: "+str(resolution))
+    imageString = userInputP.get()
+    image = io.imread(imageString)
+    resolutionLabel=Label(root,text="Resolution: "+ str("{0}x{1}".format(image.shape[1], image.shape[0])))
     resolutionLabel.pack()
     resolutionLabel.place(x=150,y=60)
 
 #drawPciture button
 def drawPicture():
-    userInputH.get()
-    userInputW.get()
-    userInputP.get()
+    imageString = userInputP.get()
+    imageHeight = int(userInputH.get())
+    imageWidth = int(userInputW.get())
 
-    main(userInputP, userInputH, userInputW)
+    main(imageString, imageHeight, imageWidth)
 
 #initilize gui
 root = Tk()
 frame = Frame(root, width=300, height=300)
 frame.pack()
-userInputH = StringVar()#Height Stuff
-heightLabel=Label(root,text="Height")
-heightLabel.pack()
-heightLabel.place(x=20,y=150)
-height = Entry(root, text="Black", fg="black",textvariable=userInputH)
-height.place(x=60,y=150)
-
-userInputW = StringVar()#width
-widthLabel=Label(root,text="Width")
-widthLabel.place(x=20,y=100)
-width = Entry(root, text="Black", fg="black",textvariable=userInputW)
-width.place(x=60,y=100)
 
 userInputP = StringVar()#picture box
 pictureLabel=Label(root,text="Picture File")
@@ -284,6 +271,19 @@ picture.place(x=90,y=20)
 getResolution= Button(root, text ="Get Resolution", command = getResolution)#resolution button
 getResolution.pack()
 getResolution.place(x=30,y=60)
+
+userInputW = StringVar()#width
+widthLabel=Label(root,text="Width")
+widthLabel.place(x=20,y=100)
+width = Entry(root, text="Black", fg="black",textvariable=userInputW)
+width.place(x=60,y=100)
+
+userInputH = StringVar()#Height Stuff
+heightLabel=Label(root,text="Height")
+heightLabel.pack()
+heightLabel.place(x=20,y=150)
+height = Entry(root, text="Black", fg="black",textvariable=userInputH)
+height.place(x=60,y=150)
 
 drawPicture = Button(root, text ="Draw picture", command = drawPicture)#draw button
 drawPicture.pack()
