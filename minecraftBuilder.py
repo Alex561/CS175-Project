@@ -258,17 +258,13 @@ def picturefy(pixelArray, depth_map, woolDict):
             if (isAlpha and pixelArray[y][x][3] > 0) or (not isAlpha):
                 closestWool = closestColor(pixelColor, woolDict)
                 # zValue = (depth * depth_map.max()) + (1 - depth) * depth_map.min();
-                zValue = int(round((depth - depth_map.min()) / (depthRange) * 100))
-                # if (depth < 0):
-                #     zValue = 10
-                # else:
-                #     zValue = 20
+                zValue = int(round((depth - depth_map.min()) / (depthRange) * 10))
                 if closestWool in woolColors.wool:
                     returnString += '<DrawBlock x="{0}" y="{1}" z="{2}" type="wool" colour="{3}"/>\n'.format(x, y+7, zValue, closestWool)
                 else:
                     returnString += '<DrawBlock x="{0}" y="{1}" z="{2}" type="{3}"/>\n'.format(x, y+7, zValue, closestWool)
 
-    print("({0}, {1}) pixels", xCount, yCount/xCount)
+    print("({0}, {1}) pixels".format(xCount, yCount/xCount))
     print(QuantitiveEval(difList))
     return returnString
 
