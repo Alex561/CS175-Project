@@ -27,7 +27,8 @@ import time
 
 import colors as woolColors
 from skimage import io
-from skimage.transform import rescale, resize
+from sklearn import *
+import cv2
 # from sklearn import decomposition
 
 # def pca(X, yDim):
@@ -58,9 +59,9 @@ from skimage.transform import rescale, resize
 #         for x in range(colorImage.shape[1]):
 #             newRow[x] = getIfromRGB(colorImage[y][x])
 #         flattended[y] = newRow
-# 
+#
 #     return flattended
-# 
+#
 # def unflattenColorImage(flattenedImage):
 #     unflattended = np.zeros(shape=(flattenedImage.shape[0], flattenedImage.shape[1], 3))
 #     for y in range(flattenedImage.shape[0]):
@@ -69,15 +70,15 @@ from skimage.transform import rescale, resize
 #             rgbFromI = getRGBfromI(flattenColorImage[y][x])
 #             newRow[y][x] = rgbFromI
 #         unflattended[y] = newRow
-# 
+#
 #     return unflattended
-# 
+#
 # def getRGBfromI(RGBint):
 #     blue = RGBint & 255
 #     green = (RGBint >> 8) & 255
 #     red = (RGBint >> 16) & 255
 #     return red, green, blue
-# 
+#
 # def getIfromRGB(rgb):
 #     red = rgb[0]
 #     green = rgb[1]
@@ -91,13 +92,35 @@ def main(imageString, imageHeight, imageWidth):
     difList = []
 
     # picture stuff
-    # imageFile = imageString
-    image = io.imread(imageString)
-    image = resize(image, (imageHeight, imageWidth))
 
-    # import matplotlib.pyplot as plt
-    # plt.imshow(image)
-    # plt.show()
+    # image = io.imread(imageString)
+    # image = resize(image, (imageHeight, imageWidth))
+    image = cv2.imread(imageString)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image = np.rot90(image, k=2)
+
+    gray_image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    # gb_kernel = cv2.getGaborKernel((31, 31), 4.0, np.pi, 10.0, 0.5, 0, ktype=cv2.CV_32F)
+    # img_filtered = cv2.filter2D(gray, cv2.CV_8U, gb_kernel.transpose())
+    depth_map = cv2.distanceTransform(gray_image, cv2.cv.CV_DIST_L2, cv2.cv.CV_DIST_MASK_PRECISE)
+    # depth_map = preprocessing.normalize(depth_map)
+    depth_map = preprocessing.scale(depth_map)
+
+    image = cv2.resize(image, (imageHeight, imageWidth))
+    depth_map = cv2.resize(depth_map, (imageHeight, imageWidth))
+    # print(depth_map.shape)
+    print(depth_map.min())
+    print(depth_map.max())
+    print(depth_map.mean())
+    print(depth_map)
+
+    # thrs = cv2.getTrackbarPos('threshold', 'distrans')
+    # mark = cv2.Canny(image, thrs, 3 * thrs)
+    # dist, labels = cv2.distanceTransformWithLabels(~mark, cv2.DIST_L2, 5)
+
+    import matplotlib.pyplot as plt
+    plt.imshow(image)
+    plt.show()
 
     # sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)  # flush print output immediately
 
@@ -114,7 +137,7 @@ def main(imageString, imageHeight, imageWidth):
                     <ServerHandlers>
                       <FlatWorldGenerator generatorString="3;7,0,5*3,2;3;,biome_1" forceReset="true"/>
                       <DrawingDecorator>
-                        ''' + picturefy(image, woolColors.colors) + '''
+                        ''' + picturefy(image, depth_map, woolColors.colors) + '''
                       </DrawingDecorator>
                       <ServerQuitFromTimeUp timeLimitMs="1000"/>
                       <ServerQuitWhenAnyAgentFinishes/>
@@ -208,13 +231,13 @@ def closestColor(pixel, woolDict):
     difList.append(minDif)
     return resultColor
 
-def picturefy(pixelArray, woolDict):
+def picturefy(pixelArray, depth_map, woolDict):
     returnString = ""
     isAlpha = False
     if (pixelArray.shape[2] == 4):
         isAlpha = True
 
-    pixelArray = np.rot90(pixelArray, k=2)
+    depthRange = depth_map.max() - depth_map.min()
 
     xCount = 0
     yCount = 0
@@ -223,7 +246,9 @@ def picturefy(pixelArray, woolDict):
         for y in range(pixelArray.shape[0]):
             yCount += 1
 
-            pixelColor = pixelArray[y][x] * 255
+            # pixelColor = pixelArray[y][x] * 255
+            pixelColor = pixelArray[y][x]
+            depth = depth_map[y][x]
             if (isAlpha):
                 pixelColor = round(pixelColor[0]), round(pixelColor[1]), round(pixelColor[2]), round(pixelColor[3])
             else:
@@ -232,10 +257,16 @@ def picturefy(pixelArray, woolDict):
             # print(pixelColor)
             if (isAlpha and pixelArray[y][x][3] > 0) or (not isAlpha):
                 closestWool = closestColor(pixelColor, woolDict)
+                # zValue = (depth * depth_map.max()) + (1 - depth) * depth_map.min();
+                zValue = int(round((depth - depth_map.min()) / (depthRange) * 100))
+                # if (depth < 0):
+                #     zValue = 10
+                # else:
+                #     zValue = 20
                 if closestWool in woolColors.wool:
-                    returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="wool" colour="{2}"/>\n'.format(x, y+7, closestWool)
+                    returnString += '<DrawBlock x="{0}" y="{1}" z="{2}" type="wool" colour="{3}"/>\n'.format(x, y+7, zValue, closestWool)
                 else:
-                    returnString += '<DrawBlock x="{0}" y="{1}" z="10" type="{2}"/>\n'.format(x, y+7, closestWool)
+                    returnString += '<DrawBlock x="{0}" y="{1}" z="{2}" type="{3}"/>\n'.format(x, y+7, zValue, closestWool)
 
     print("({0}, {1}) pixels", xCount, yCount/xCount)
     print(QuantitiveEval(difList))
@@ -290,4 +321,3 @@ drawPicture.pack()
 drawPicture.place(x=75,y=200)
 
 root.mainloop()#drawn
-
