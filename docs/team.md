@@ -1,16 +1,16 @@
 ---
 layout: default
-title:  Team
+title:  The Sketchy AI Team
 ---
 
 # {{ page.title }}
 
 
 ## Alex Chapp
-***achapp***: ucinetid
+ucinetid: ***achapp***
 
 ## Katherine Fitzpatrick
-***kathermf***: ucinetid
+ucinetid: ***kathermf***
 
 ## Edwin Ho
-***eaho1***: ucinetid
+ucinetid: ***eaho1***
