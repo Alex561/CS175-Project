@@ -23,7 +23,7 @@ Recreation of the symbol for the popular video game Overwatch:
 
 Here we used an impressive painting of space we randomly found:
 
-<img src="image3.png" width="850" height="450">
+<img src="images/image3.png" width="850" height="450">
 
 An example of the AI using a photo:
 
@@ -33,14 +33,17 @@ An example of the AI using a photo:
 
 
 Comparisons of the same photo, but with various parameters:
+
 ![](images/tina1.png) 
 ![](images/tina2.png)
 
 Similarly, a jetty:
+
 ![](images/d5.png) 
 ![](images/d3.png)
 
 Here is another photo:
+
 ![](images/idk.png)
 
 
