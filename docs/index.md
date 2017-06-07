@@ -50,19 +50,19 @@ Here is another photo:
 
 
 ## Resources
-##### Malmo
+#### Malmo
 Malmo is a platform for AI experimentation and research built on top of Minecraft. In this project, it is used to create builds within Minecraft, and bridge the gap between our code and Minecraft.
 
 [https://github.com/Microsoft/malmo](https://github.com/Microsoft/malmo)
 
-##### OpenCV Image Processing
+#### OpenCV Image Processing
 Sketchy AI uses OpenCV to process images. OpenCV is an open-source computer vision library. In this project, OpenCV reads in images, rescales them, and handles depth mapping by using distance transform.
 
 [http://docs.opencv.org/master/d2/dbd/tutorial_distance_transform.html](http://docs.opencv.org/master/d2/dbd/tutorial_distance_transform.html)
 
 [https://github.com/opencv/opencv/blob/master/samples/python/distrans.py](https://github.com/opencv/opencv/blob/master/samples/python/distrans.py)
 
-##### Scikit-Image
-This project uses Scikit-Image to process images.  Scikit-Image is a collection of algorithms used for image processing in Python. Sklearn is used in this project to scale down the features of the image. 
+#### Scikit-Image
+This project initially used Scikit-Image to process images.  Scikit-Image is a collection of algorithms used for image processing in Python. Sklearn is used in this project to scale down the features of the image. We left this library for OpenCV because the way it manipulated images made depth much harder to calculate out of a picture then the OpenCV library that we are currently using. 
 
 [http://scikit-image.org/](http://scikit-image.org/ "Link to Scikit-Image's Site")
