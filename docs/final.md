@@ -26,29 +26,45 @@ For recreating depth, we also used OpenCV which has a distance transform method.
 In an attempt to improve our depth map, we tried using dilation and watershed techniques. It retains shape of objects so that distinct objects are separated. Therefore, the foreground and background objects would be correctly separated. Right now, the distance transform smooths the distances, so parts of the same object will be on different layers. However, this proved to be very difficult to implement and resulted in poor recreations of images. In the end, we left it out of our project.
 
 ## Evaluation
-#### Quantitative Evaluation
-For our quantitative evaluation, we determine accuracy by calculating error between the Minecraft blocks’ RGB values to the image’s RGB values. This tells us how close the colors of the replica are to the colors in the picture. These calculations will help us reevaluate how our AI recreates the image and make sure it maintains its most important aspects.  These error calculation numbers were decreased from around 80 RGB numbers off to around 20 on average.  This was accomplished by adding more blocks into our AIs reference of Minecraft blocks and their average RGB values.  It was also improved by removing certain blocks from the AI's block selection logic in order to take out weirdly colored blocks.
+### Quantitative Evaluation
+For our quantitative evaluation, we determine accuracy by calculating error between the Minecraft blocks’ RGB values to the image’s RGB values. This tells us how close the colors of the replica are to the colors in the picture. These calculations will help us reevaluate how our AI recreates the image and make sure it maintains its most important aspects.  These error calculation numbers were decreased from around 80 RGB numbers off to around 20 on average.  This was accomplished by adding more blocks into our AIs reference of Minecraft blocks and their average RGB values.  It was also improved by removing certain blocks from the AI's block selection logic in order to take out weirdly colored blocks or blocks that would interact with other blocks (such as the pumpkin on two blocks of snow creating a snowman).
 
-#### Qualitative Evaluation
-Our qualitative evaluation is primarily based on how accurate the replication the image looks. This includes doing basic visual comparisons between the replica in Minecraft and the original. We also compare the results from trying different algorithms to each other to see which one seems to recreate the image and its depth the best. 
+### Qualitative Evaluation
+Our qualitative evaluation is primarily based on how accurate the replication the image looks as well as how interesting it looks. This includes doing basic visual comparisons between the replica in Minecraft and the original. We also compare the results from trying different parameters to each other to see which one seems to create the best image in Minecraft. We collected feedback by polling people showing them several copies of the same image with various settings. This included how many different layers to break the depth into, how much of a Z buffer to add between pixels, and what resolution it was.  This feedback was used to select the most popular settings for our AI that should look best to the user.
 
-We collected feedback on this by polling people showing them four copies of the same image with various settings in our AI such as how many different layers to break the depth into and how much of a Z buffer to add between pixels.  We used this feedback to select the most popular settings for our AI in order to make the 3D images looks best to the user.
+<img src="images/jetty.jpg" width="450" height="250">
+<img src="images/L10S03_R100x66.png" width="450" height="250" alt="10Layers3spacesResolution100x66"> 
+<img src="images/L10S03_R200x125.png" width="450" height="250">
+<img src="images/L10S05_200x125.png" width="450" height="250">
+<img src="images/L25S02_R200x125.png" width="450" height="250">
+<img src="images/L50S03_R200x125.png" width="450" height="250">
+
+| Tables        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
+
+Markdown | Less | Pretty
+--- | --- | ---
+*Still* | `renders` | **nicely**
+1 | 2 | 3
 
 
 ## References
-#### Malmo
+### Malmo
 Malmo is a platform for AI experimentation and research built on top of Minecraft. In this project, it is used to create builds within Minecraft, and bridge the gap between our code and Minecraft.
 
 [https://github.com/Microsoft/malmo](https://github.com/Microsoft/malmo)
 
-#### OpenCV Image Processing
+### OpenCV Image Processing
 Sketchy AI uses OpenCV to process images. OpenCV is an open-source computer vision library. In this project, OpenCV reads in images, rescales them, and handles depth mapping by using distance transform.
 
 [http://docs.opencv.org/master/d2/dbd/tutorial_distance_transform.html](http://docs.opencv.org/master/d2/dbd/tutorial_distance_transform.html)
 
 [https://github.com/opencv/opencv/blob/master/samples/python/distrans.py](https://github.com/opencv/opencv/blob/master/samples/python/distrans.py)
 
-#### Scikit-Image
+### Scikit-Image
 This project initially used Scikit-Image to process images.  Scikit-Image is a collection of algorithms used for image processing in Python. Sklearn is used in this project to scale down the features of the image. We left this library for OpenCV because the way it manipulated images made depth much harder to calculate out of a picture then the OpenCV library that we are currently using.
 
 [http://scikit-image.org/](http://scikit-image.org/ "Link to Scikit-Image's Site")
