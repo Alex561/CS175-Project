@@ -6,7 +6,7 @@ title:	Final Report
 # {{ page.title }}
 
 ## Video Summary
-insert final video here
+<iframe width="560" height="315" src="https://www.youtube.com/embed/dHg8jZCkW9Q" frameborder="0" allowfullscreen></iframe>
 
 ## Project Summary
 
@@ -32,24 +32,26 @@ For our quantitative evaluation, we determine accuracy by calculating error betw
 ### Qualitative Evaluation
 Our qualitative evaluation is primarily based on how accurate the replication the image looks as well as how interesting it looks. This includes doing basic visual comparisons between the replica in Minecraft and the original. We also compare the results from trying different parameters to each other to see which one seems to create the best image in Minecraft. We collected feedback by polling people showing them several copies of the same image with various settings. This included how many different layers to break the depth into, how much of a Z buffer to add between pixels, and what resolution it was.  This feedback was used to select the most popular settings for our AI that should look best to the user.
 
+##### Original Image & 1
 <img src="images/jetty.jpg" width="450" height="250">
-<img src="images/L10S03_R100x66.png" width="450" height="250" alt="10Layers3spacesResolution100x66"> 
+<img src="images/L10S03_R100x66.png" width="450" height="250" alt="10Layers3spacesResolution100x66">
+##### 2 & 3
 <img src="images/L10S03_R200x125.png" width="450" height="250">
 <img src="images/L10S05_200x125.png" width="450" height="250">
+##### 4 & 5
 <img src="images/L25S02_R200x125.png" width="450" height="250">
 <img src="images/L50S03_R200x125.png" width="450" height="250">
 
-| Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
+image | resolution | # of layers | # of space (between layers)
+--- | --- | --- | ---
+original |  | n/a | n/a
+1 | 100x66 | 10 | 3
+2 | 200x125 | 10 | 3
+3 | 200x125 | 10 | 5
+4 | 200x125 | 25 | 2
+5 | 200x125 | 50 | 3
 
-Markdown | Less | Pretty
---- | --- | ---
-*Still* | `renders` | **nicely**
-1 | 2 | 3
-
+After our evaluation, we determined that the best settings were 25 layers and 2 spaces.
 
 ## References
 ### Malmo
