@@ -46,7 +46,9 @@ For our quantitative evaluation, we determine accuracy by calculating error betw
 
 #### RGB Error Rates
 'Jetty' Error Rate: 19.706
+
 'Pool Balls' Error Rate: 29.416
+
 'Double Rainbow' Error Rate: 28.608
 
 ### Qualitative Evaluation
