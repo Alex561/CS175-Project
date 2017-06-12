@@ -45,11 +45,9 @@ In an attempt to improve our depth map, we tried using dilation and watershed te
 For our quantitative evaluation, we determine accuracy by calculating error between the Minecraft blocks’ RGB values to the image’s RGB values. This tells us how close the colors of the replica are to the colors in the picture. These calculations will help us reevaluate how our AI recreates the image and make sure it maintains its most important aspects.  These error calculation numbers were decreased from around 80 RGB numbers off to around 20 on average.  This was accomplished by adding more blocks into our AIs reference of Minecraft blocks and their average RGB values.  It was also improved by removing certain blocks from the AI's block selection logic in order to take out weirdly colored blocks or blocks that would interact with other blocks (such as the pumpkin on two blocks of snow creating a snowman).
 
 #### RGB Error Rates
-Image |  | Error |  |
---- | --- | --- | --- |
-Jetty |  | 19.706 |  |
-Pool Balls |  | 29.416 |  |
-Double Rainbow |  | 28.608 |  |
+'Jetty' Error Rate: 19.706
+'Pool Balls' Error Rate: 29.416
+'Double Rainbow' Error Rate: 28.608
 
 ### Qualitative Evaluation
 Our qualitative evaluation is primarily based on how accurate the replication of the image looks as well as how interesting it looks. This includes doing basic visual comparisons between the replica in Minecraft and the original. We also compare the results from trying different parameters to each other to see which one seems to create the best image in Minecraft. 
