@@ -32,10 +32,11 @@ For recreating depth, we also used OpenCV which has a distance transform method.
 <img src="images/PoolBallsDepth.png" width="450" height="300">
 <img src="images/poolballs_mc.png" width="450" height="300">
 
-#### 'Double Rainbow' Original, Depthe Map, and Minecraft Render
+#### 'Double Rainbow' Original, Depth Map, and Minecraft Render
 <img src="images/DoubleRainbow.jpg" width="450" height="300">
 <img src="images/DoubleRainbowDepth.png" width="450" height="300">
 <img src="images/DoubleRainbow_mc.png" width="450" height="300">
+
 
 #### Dilation & Watershed
 In an attempt to improve our depth map, we tried using dilation and watershed techniques. It retains shape of objects so that distinct objects are separated. Therefore, the foreground and background objects would be correctly separated. Right now, the distance transform smooths the distances, so parts of the same object will be on different layers. However, this proved to be very difficult to implement and resulted in poor recreations of images. In the end, we left it out of our project.
